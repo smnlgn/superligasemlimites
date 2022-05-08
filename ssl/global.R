@@ -4,8 +4,8 @@ library(reactablefmtr)
 load("full_stats.Rdata")
 full_stats <- full_stats_
 logo <- read_csv2("logos.csv")
+teams <- full_stats |> select(Player, Team) |> distinct()
 
-teams <- full_stats |> select(Player, Team) |> unique()
 full_stats <- full_stats |> 
   select(-c(1:5)) |> ## sets
   mutate(libero_ind = ifelse(grepl("\\(L\\)", Player), 1, 0)) |> 
@@ -14,8 +14,8 @@ full_stats <- full_stats |>
          "Service Ace" = `Serviço Ace`*12,
          "Attack Kill" = `Ataque Exc.`*8,
          "Attack Error" = (`Ataque Err` + `Ataque Blk`)*-12,
-         "Dig" = ifelse(libero_ind == 1, `Recepção Tot`*5,0),
-         "Good Pass" = ifelse(libero_ind == 0, `Recepção Tot`*2,0),
+         "Dig" = ifelse(libero_ind == 1, (`Recepção Tot`- `Recepção Err`) *5,0),
+         "Good Pass" = ifelse(libero_ind == 0, (`Recepção Tot` - `Recepção Err`) *2,0),
          "Pass Error" = `Recepção Err`*-12,
          "Block Stuff" = `Bloqueio Pts`*12,
          "Match Win" = ifelse(winner_ind == 1, 60,0)) |> 
@@ -30,17 +30,17 @@ full_stats$total <- rowSums(full_stats[,9:17], na.rm = T)
 full_stats <- full_stats |> 
   filter(!(Player == "ODINA ALRYEVA"))
 
-classificacao_geral <- full_stats |> 
-  group_by(Player) |> 
-  summarise(jogos = n(),
-            Pontos = sum(total, na.rm = T),
-            Média = round(Pontos/jogos,2))
-classificacao_geral <- left_join(classificacao_geral, teams)
-classificacao_geral <- left_join(classificacao_geral, logo, 
-                                 by = c("Team" = "TEAM"))
-
-classificacao_geral <- classificacao_geral |> 
-  select(Player, Team, LOGO, jogos, Pontos, Média) 
+# classificacao_geral <- full_stats |> 
+#   group_by(Player) |> 
+#   summarise(jogos = n(),
+#             Pontos = sum(total, na.rm = T),
+#             Média = round(Pontos/jogos,2))
+# classificacao_geral <- left_join(classificacao_geral, teams)
+# classificacao_geral <- left_join(classificacao_geral, logo, 
+#                                  by = c("Team" = "TEAM"))
+# 
+# classificacao_geral <- classificacao_geral |> 
+#   select(Player, Team, LOGO, jogos, Pontos, Média) 
 
 
 

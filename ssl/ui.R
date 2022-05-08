@@ -10,9 +10,9 @@ sidebar <- dashboardSidebar(
         menuItem("Sobre", icon = icon("info-circle"), tabName = "about"),
         shinyWidgets::pickerInput(inputId = "teams",
                                 label = "Times",
-                                choices = teams$Team,
+                                choices = unique(teams$Team),
                                 multiple = T,
-                                selected = teams$Team,
+                                selected =unique(teams$Team),
                                 options = list(
                                     `actions-box` = TRUE))
         
@@ -24,9 +24,14 @@ body <- dashboardBody(
     tabItems(
         tabItem(tabName = "results",
                 fluidRow(
-                    box("Geral"),
-                    box("Por fase")
-                )
+                    tabBox(width = 12,
+                    tabPanel("Geral",
+                        reactable::reactableOutput("resultGeral")),
+                    tabPanel("Classificatória",
+                             reactable::reactableOutput("resultClass")),
+                    tabPanel("Playoffs",
+                             reactable::reactableOutput("resultPlay"))
+                ))
         ),
         tabItem(tabName = "about"
                 )
