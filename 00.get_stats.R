@@ -102,28 +102,100 @@ for (i in 1:n) {
     full_stats <- rbind(home$stats, guest$stats) |> 
       mutate(Match = match,
              Winner = winner) |> 
-      select(Player, Team, Match, Winner, 
+      select(`SET 1`, `SET 2`, `SET 3`, `SET 4`, `SET 5`,
+             Player, Team, Match, Winner, 
              `Serviço Err`, `Serviço Ace`,
              `Recepção Tot`, `Recepção Err`,
              `Ataque Exc.`,  `Ataque Err`, `Ataque Blk`,
              `Bloqueio Pts`) |> 
-      mutate(winner_ind = ifelse(Winner == Team, 1, 0),
-             libero_ind = ifelse(grepl("\\(L\\)", Player), 1, 0)) |> 
+      mutate(winner_ind = ifelse(Winner == Team, 1, 0)) |> 
       mutate(Fase = dict$fase[dict$ids == id],
              Cat = dict$cat[dict$ids == id],
              Jogo = i,
-             id = id) 
+             id = id)  |> 
+      mutate(`SET 1` = as.character(`SET 1`), 
+             `SET 2` = as.character(`SET 2`),  
+             `SET 3` = as.character(`SET 3`), 
+             `SET 4` = as.character(`SET 4`), 
+             `SET 5` = as.character(`SET 5`))
     full_stats_list[[i]] <- full_stats
   }
 }
-
 end <- Sys.time()
 
 full_stats <- bind_rows(full_stats_list)
+full_stats[full_stats == ""] = NA
 full_stats[full_stats == "-"] <- NA
 
+
+full_stats_ <- full_stats |> 
+  filter(if_any(c(`SET 1`:`SET 5`),  ~ !is.na(.))) ## sem reservas que nao jogaram 
+full_stats_ <- full_stats_ |> 
+  mutate(libero_ind = ifelse(grepl("\\(L\\)", Player), 1, 0),
+         Team = gsub("SAUDE", "SAÚDE", Team))
+
+full_stats_$Player <- stringi::stri_replace_all_fixed(
+  full_stats_$Player,
+  pattern = c("CEREM KAPUCU",
+              "KAPACU CEREN",
+              "KAPUCU CEREM",
+              "KAPUCU CEREN",
+              "CUSTODIO THAIS",
+              "DANIELA LEAL", 
+              "FERNANDA GUIMARAES SANTOS (L)",
+              "FERNANDA GUIMARAES SANTOS",
+              "FERNANDA GUIMARAESDOS SANTOS",
+              "ivina ivina",
+              "IVNA MARRA",
+              "JOYCE GOMES",
+              "joycinha J",
+              "JOYCE SILVA",
+              "JULIA MOREIRA",
+              "KEYLA RAMALHO (L)",
+              "LAIS ZURLY VASQUES",
+              "LETICIA GOMES",
+              "MARCELLE SILVA",
+              "MELISSA  RANGEL PAEZ",
+              "PAMELLA  OLIVEIRA",
+              "PAULA PANNO",
+              "PAULINA  DE SOUZA",
+              "VITORIA PARISE",
+              "REED NIA",
+              "(L) (L)"),
+  replacement = c("CEREN KAPUCU", 
+                  "CEREN KAPUCU", 
+                  "CEREN KAPUCU", 
+                  "CEREN KAPUCU", 
+                  "THAISINHA SOUZA",
+                  "DANIELA LEAL (L)", 
+                  "FERNANDA GUIMARÃES",
+                  "FERNANDA GUIMARÃES",
+                  "FERNANDA GUIMARÃES",
+                  "IVNA COLOMBO",
+                  "IVNA COLOMBO",
+                  "JOYCYNHA SILVA",
+                  "JOYCYNHA SILVA",
+                  "JOYCYNHA SILVA",
+                  "JULIA MOREIRA (L)",
+                  "KEYLA RAMALHO",
+                  "LAIS ZURLY VASQUES (L)",
+                  "LETICIA GOMES (L)",
+                  "MARCELLE SILVA (L)",
+                  "MELISSA RANGEL PAEZ",
+                  "PAMELLA OLIVEIRA",
+                  "PAULA PANNO (L)",
+                  "PAULINA  DE SOUZA (L)",
+                  "VITORIA PARISE (L)",
+                  "NIA REED",
+                  "(L)"),
+  vectorize=FALSE)
+  
+players <- full_stats_ |> group_by(Player, Team) |> count()
+
+
 #writexl::write_xlsx(full_stats, "full_stats.xlsx")
-save(full_stats, file = "full_stats.RData")
+#writexl::write_xlsx(full_stats, "full_stats_clean.xlsx")
+#save(full_stats_, file = "full_stats.RData")
 full_stats <- full_stats |> 
   mutate(across(5:12, as.numeric)) |> 
   mutate("Service Error" = `Serviço Err`*-8,
