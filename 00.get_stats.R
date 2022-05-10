@@ -196,43 +196,7 @@ players <- full_stats_ |> group_by(Player, Team) |> count()
 #writexl::write_xlsx(full_stats, "full_stats.xlsx")
 #writexl::write_xlsx(full_stats, "full_stats_clean.xlsx")
 #save(full_stats_, file = "full_stats.RData")
-full_stats <- full_stats |> 
-  mutate(across(5:12, as.numeric)) |> 
-  mutate("Service Error" = `Serviço Err`*-8,
-         "Service Ace" = `Serviço Ace`*12,
-         "Attack Kill" = `Ataque Exc.`*8,
-         "Attack Error" = (`Ataque Err` + `Ataque Blk`)*-12,
-         "Dig" = ifelse(libero_ind == 1, `Recepção Tot`*5,0),
-         "Good Pass" = ifelse(libero_ind == 0, `Recepção Tot`*2,0),
-         "Pass Error" = `Recepção Err`*-12,
-         "Block Stuff" = `Bloqueio Pts`*12,
-         "Match Win" = ifelse(winner_ind == 1, 60,0)) |> 
-  select(Player, Team, Match, Winner, 
-         Fase, Cat, Jogo, id,
-         `Service Error`, `Service Ace`,
-         `Attack Kill`, `Attack Error`,
-         Dig, `Good Pass`, `Pass Error`,
-         `Block Stuff`, `Match Win`) 
-full_stats$total <- rowSums(full_stats[,9:17], na.rm = T)
 
-
-
-#####  geral #####
-
-classificacao_geral <- full_stats |> 
-  group_by(Player) |> 
-  summarise(jogos = n(),
-            Pontos = sum(total, na.rm = T),
-            Média = Pontos/jogos)
-
-#### fase ####
-
-classificacao_fase <- full_stats |> 
-  group_by(Fase, Player) |> 
-  summarise(jogos = n(),
-            Pontos = sum(total, na.rm = T),
-            Média = Pontos/jogos) |> 
-  arrange(Fase, desc(Média))
 
 
 get_viva_volei <- function(page, x) {
@@ -259,22 +223,15 @@ get_viva_volei <- function(page, x) {
 }
   
   
-vv_list <-list()
-url <- 'https://melhordojogo.cbv.com.br/resultados.php'
-page <- read_html(url)
-i_ <- 1
-for (i in seq(2,326,by=2)) {
-  vv_list[[i_]] <- get_viva_volei(page, i)
-  i_ <- i_+ 1
-}
-vv_df <-  bind_rows(vv_list)
 
 
+#load("full_stats.RData")
+vv <- read_csv2("vivavolei.csv")
+vv_ <- vv |> 
+  janitor::tabyl(VV)
 
-partida <- full_stats |> 
-  select(Match) |> 
-  rename(match = Match) |> 
-  distinct()
+jogadores <- full_stats_ |> 
+  select(Team, Player) |> 
+  unique()
 
-partida <- left_join(partida, vv_df)
-
+teste <- right_join(jogadores, vv_, by = c("Player" = "VV"))

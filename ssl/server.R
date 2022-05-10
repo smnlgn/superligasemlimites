@@ -22,6 +22,7 @@ shinyServer(function(input, output) {
                 PassError = sum(`Pass Error`, na.rm = T),
                 BlockStuff = sum(`Block Stuff`, na.rm = T),
                 MatchWin = sum(`Match Win`, na.rm = T),
+                MVP = sum(MVP, na.rm = T)
       )
     
     classificacao_geral <- left_join(classificacao_geral, teams)
@@ -31,7 +32,7 @@ shinyServer(function(input, output) {
     classificacao_geral <- classificacao_geral |> 
       select(Player, Team, LOGO, jogos, Pontos, Média,
              ServiceErro, ServiceAce, AttackKill, AttackError,
-             Dig, GoodPass, PassError, BlockStuff, MatchWin) 
+             Dig, GoodPass, PassError, BlockStuff, MatchWin, MVP) 
   })
   
   classificacao_fases <- reactive({
@@ -52,6 +53,7 @@ shinyServer(function(input, output) {
                 PassError = sum(`Pass Error`, na.rm = T),
                 BlockStuff = sum(`Block Stuff`, na.rm = T),
                 MatchWin = sum(`Match Win`, na.rm = T),
+                MVP = sum(MVP, na.rm = T)
                 )
                 
                 
@@ -62,7 +64,7 @@ shinyServer(function(input, output) {
     classificatoria <- classificatoria |> 
       select(Player, Team, LOGO, jogos, Pontos, Média,
              ServiceErro, ServiceAce, AttackKill, AttackError,
-             Dig, GoodPass, PassError, BlockStuff, MatchWin) 
+             Dig, GoodPass, PassError, BlockStuff, MatchWin, MVP) 
     
     playoffs <- full_stats |> 
       filter(Fase == "playoffs") |> 
@@ -80,6 +82,7 @@ shinyServer(function(input, output) {
                 PassError = sum(`Pass Error`, na.rm = T),
                 BlockStuff = sum(`Block Stuff`, na.rm = T),
                 MatchWin = sum(`Match Win`, na.rm = T),
+                MVP = sum(MVP, na.rm = T)
       )
     
     playoffs <- left_join(playoffs, teams)
@@ -89,7 +92,7 @@ shinyServer(function(input, output) {
     playoffs <- playoffs |> 
       select(Player, Team, LOGO, jogos, Pontos, Média,
              ServiceErro, ServiceAce, AttackKill, AttackError,
-             Dig, GoodPass, PassError, BlockStuff, MatchWin) 
+             Dig, GoodPass, PassError, BlockStuff, MatchWin, MVP) 
     
     return(list(classificatoria = classificatoria,
                 playoffs = playoffs))
@@ -101,7 +104,7 @@ shinyServer(function(input, output) {
     
     classificacao_geral() |> 
       select(-Team) |> 
-      arrange(desc(Média)) |> 
+      arrange(desc(Pontos)) |> 
       reactable(searchable = TRUE,
                 rownames = TRUE,
                 columnGroups = list(
@@ -166,6 +169,9 @@ shinyServer(function(input, output) {
                   MatchWin = colDef(#width = 200,
                     name = "Partidas Vencidas",
                     align = "center"),
+                  MVP = colDef(#width = 200,
+                    name = "Viva Volêi",
+                    align = "center"),
                   .rownames  = colDef(width = 20)
                 ),
                 theme = fivethirtyeight(centered = TRUE, header_font_size = 11),
@@ -183,7 +189,7 @@ shinyServer(function(input, output) {
     
     classificacao_fases()$classificatoria |> 
       select(-Team) |> 
-      arrange(desc(Média)) |> 
+      arrange(desc(Pontos)) |> 
       reactable(searchable = TRUE,
                 rownames = TRUE,
                 columnGroups = list(
@@ -219,7 +225,7 @@ shinyServer(function(input, output) {
                     align = "center",
                     cell = color_tiles(
                       classificacao_fases()$classificatoria,
-                      colors = viridis::viridis(3, direction = -1))
+                      colors = viridis::viridis(3, direction = -1)),
                   ),
                   ServiceErro = colDef(#width = 200,
                     name = "Erro",
@@ -247,6 +253,9 @@ shinyServer(function(input, output) {
                     align = "center"),
                   MatchWin = colDef(#width = 200,
                     name = "Partidas Vencidas",
+                    align = "center"),
+                  MVP = colDef(#width = 200,
+                    name = "Viva Volêi",
                     align = "center"),
                   .rownames  = colDef(width = 20)
                 ),
@@ -265,7 +274,7 @@ shinyServer(function(input, output) {
     
     classificacao_fases()$playoffs |> 
       select(-Team) |> 
-      arrange(desc(Média)) |> 
+      arrange(desc(Pontos)) |> 
       reactable(searchable = TRUE,
                 rownames = TRUE,
                 columnGroups = list(
@@ -329,6 +338,9 @@ shinyServer(function(input, output) {
                     align = "center"),
                   MatchWin = colDef(#width = 200,
                     name = "Partidas Vencidas",
+                    align = "center"),
+                  MVP = colDef(#width = 200,
+                    name = "Viva Volêi",
                     align = "center"),
                   .rownames  = colDef(width = 20)
                 ),

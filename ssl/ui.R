@@ -1,6 +1,9 @@
 library(shiny)
 library(shinydashboard)
 library(shinyWidgets)
+library(dashboardthemes)
+library(markdown)
+
 
 
 
@@ -15,12 +18,11 @@ sidebar <- dashboardSidebar(
                                 selected =unique(teams$Team),
                                 options = list(
                                     `actions-box` = TRUE))
-        
-        
+        )
     )
-)
 
 body <- dashboardBody(
+    customTheme,
     tabItems(
         tabItem(tabName = "results",
                 fluidRow(
@@ -33,8 +35,15 @@ body <- dashboardBody(
                              reactable::reactableOutput("resultPlay"))
                 ))
         ),
-        tabItem(tabName = "about"
-                )
+        tabItem(tabName = "about",
+                fluidRow(
+                    column(width = 2),
+                    column(width = 10,
+                           align="left",
+                           box(width = 10,
+                           includeMarkdown("readme.md"))),
+                    column(width = 2)
+                ))
         )
  )
 
