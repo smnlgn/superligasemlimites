@@ -8,7 +8,6 @@ load("full_stats.RData")
 full_stats <- full_stats_
 logo <- read_csv2("logos.csv")
 vv <- read_csv2("vivavolei.csv")
-teams <- full_stats |> select(Player, Team) |> distinct()
 
 full_stats$Player <- stringi::stri_replace_all_fixed(
   full_stats$Player,
@@ -29,6 +28,9 @@ full_stats$Player <- stringi::stri_replace_all_fixed(
                   "IVNA COLOMBO",
                   "(L)"),
   vectorize=FALSE)
+
+teams <- full_stats |> select(Player, Team) |> distinct()
+
 
 full_stats <- left_join(full_stats, vv) |> 
   mutate(VV = ifelse(VV == Player, 1, 0))
