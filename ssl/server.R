@@ -170,7 +170,7 @@ shinyServer(function(input, output) {
                     name = "Partidas Vencidas",
                     align = "center"),
                   MVP = colDef(#width = 200,
-                    name = "Viva Volêi",
+                    name = "Viva Vôlei",
                     align = "center"),
                   .rownames  = colDef(width = 20)
                 ),
@@ -255,7 +255,7 @@ shinyServer(function(input, output) {
                     name = "Partidas Vencidas",
                     align = "center"),
                   MVP = colDef(#width = 200,
-                    name = "Viva Volêi",
+                    name = "Viva Vôlei",
                     align = "center"),
                   .rownames  = colDef(width = 20)
                 ),
@@ -340,7 +340,7 @@ shinyServer(function(input, output) {
                     name = "Partidas Vencidas",
                     align = "center"),
                   MVP = colDef(#width = 200,
-                    name = "Viva Volêi",
+                    name = "Viva Vôlei",
                     align = "center"),
                   .rownames  = colDef(width = 20)
                 ),
