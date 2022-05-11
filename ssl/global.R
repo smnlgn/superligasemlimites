@@ -6,28 +6,9 @@ library(markdown)
 
 load("full_stats.RData")
 full_stats <- full_stats_
+rm(full_stats_)
 logo <- read_csv2("logos.csv")
 vv <- read_csv2("vivavolei.csv")
-
-full_stats$Player <- stringi::stri_replace_all_fixed(
-  full_stats$Player,
-  pattern = c("MARYS DA SILVA LORRAYNA",
-              "SOUZA THAISINHA",
-              "AMANDA RODRIGUES",
-              "CLAUDIA  BUENO",
-              "STEFANIE TARRAGA",
-              "OLIVEIRA PAMELA",
-              "NASCIMENTO IVNA",
-              '(L) (L)'),
-  replacement = c("LORRAYNA MARYS DA SILVA",
-                  "THAISINHA SOUZA",
-                  "AMANDA RODRIGUES SEHN",
-                  "CLAUDIA BUENO",
-                  "STEFANIE TARRAGA (L)",
-                  "PAMELLA OLIVEIRA",
-                  "IVNA COLOMBO",
-                  "(L)"),
-  vectorize=FALSE)
 
 teams <- full_stats |> select(Player, Team) |> distinct()
 

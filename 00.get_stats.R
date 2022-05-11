@@ -161,6 +161,13 @@ full_stats_$Player <- stringi::stri_replace_all_fixed(
               "PAULINA  DE SOUZA",
               "VITORIA PARISE",
               "REED NIA",
+              "MARYS DA SILVA LORRAYNA",
+              "SOUZA THAISINHA",
+              "AMANDA RODRIGUES",
+              "CLAUDIA  BUENO",
+              "STEFANIE TARRAGA",
+              "OLIVEIRA PAMELA",
+              "NASCIMENTO IVNA",
               "(L) (L)"),
   replacement = c("CEREN KAPUCU", 
                   "CEREN KAPUCU", 
@@ -187,51 +194,20 @@ full_stats_$Player <- stringi::stri_replace_all_fixed(
                   "PAULINA  DE SOUZA (L)",
                   "VITORIA PARISE (L)",
                   "NIA REED",
+                  "LORRAYNA MARYS DA SILVA",
+                  "THAISINHA SOUZA",
+                  "AMANDA RODRIGUES SEHN",
+                  "CLAUDIA BUENO",
+                  "STEFANIE TARRAGA (L)",
+                  "PAMELLA OLIVEIRA",
+                  "IVNA COLOMBO",
                   "(L)"),
   vectorize=FALSE)
   
 players <- full_stats_ |> group_by(Player, Team) |> count()
 
 
-#writexl::write_xlsx(full_stats, "full_stats.xlsx")
-#writexl::write_xlsx(full_stats, "full_stats_clean.xlsx")
-#save(full_stats_, file = "full_stats.RData")
+writexl::write_xlsx(full_stats, "full_stats_clean.xlsx")
+save(full_stats_, file = "full_stats.RData")
 
 
-
-get_viva_volei <- function(page, x) {
-  home <- page |> 
-    html_nodes(xpath = paste0("/html/body/div[", x, "]/a[1]/h3[1]")) |> 
-    html_text() ## home team
-  guest <-page |> 
-    html_nodes(xpath = paste0("/html/body/div[", x, "]/a[1]/h3[3]")) |> 
-    html_text() ##guest team
-  
-  match <- paste(home, "x", guest)
-  
-  results <- page |> 
-    html_nodes(xpath = paste0("/html/body/div[", x, "]/a[2]")) |>
-    html_attr("href") ## link to results page
-  url2 <- paste0('https://melhordojogo.cbv.com.br/', results)
-  vv <- read_html(url2) |> 
-    html_nodes(xpath = "/html/body/div[1]/h3/span[1]") |> 
-    html_text() 
-  vv <- sub(".*? ", "", vv)
-  
-  df <- tibble(match = match, viva_volei = vv)
-  return(df)
-}
-  
-  
-
-
-#load("full_stats.RData")
-vv <- read_csv2("vivavolei.csv")
-vv_ <- vv |> 
-  janitor::tabyl(VV)
-
-jogadores <- full_stats_ |> 
-  select(Team, Player) |> 
-  unique()
-
-teste <- right_join(jogadores, vv_, by = c("Player" = "VV"))
