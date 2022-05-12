@@ -32,11 +32,9 @@ Todas as informações da Superliga foram extraídas direto do [site](https://su
 | MVP           | Viva vôlei              | 60            |
 
 
-E por fim, queria agradecer a [Débora Elisa](https://twitter.com/deboraelisa_)  e [Nathalia Movilla](https://twitter.com/nathmovilla) que me responderam numa boa quando eu mandei mensagem do nada e me ajudaram a conseguir os dados que eu precisava.
-
 
 ----
-Quem tiver interesse em ver o código, está [aqui](https://github.com/smnlgn/superligasemlimites).
+
 
 
 
